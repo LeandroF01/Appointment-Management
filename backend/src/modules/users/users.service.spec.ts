@@ -1,18 +1,42 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
-describe('UsersService', () => {
-  let service: UsersService;
+@Injectable()
+export class UsersService {
+  constructor(private prisma: PrismaService) {}
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
-    }).compile();
+  create(data: CreateUserDto) {
+    return this.prisma.user.create({ data });
+  }
 
-    service = module.get<UsersService>(UsersService);
-  });
+  findAll() {
+    return this.prisma.user.findMany();
+  }
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
+  update(id: string, data: UpdateUserDto) {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
+
+  remove(id: string) {
+    return this.prisma.user.delete({
+      where: { id },
+    });
+  }
+}
