@@ -1,11 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+  moduleFormat    = "cjs"
 }
 
 datasource db {
@@ -20,7 +16,6 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   events    Event[]  @relation("EventOwner")
 }
 
@@ -32,7 +27,6 @@ model Event {
   isPaid      Boolean  @default(false)
   price       Float?
   createdAt   DateTime @default(now())
-
   ownerId     String
   owner       User     @relation("EventOwner", fields: [ownerId], references: [id])
 }
@@ -41,4 +35,3 @@ enum Role {
   USER
   ADMIN
 }
-
